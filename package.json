@@ -1,0 +1,39 @@
+{
+  "name": "authzen-proxy",
+  "version": "1.0.7",
+  "description": "AuthZEN to Topaz proxy",
+  "main": "index.ts",
+  "scripts": {
+    "build": "rm -rf ./build && tsc",
+    "start": "node build/index.js",
+    "dev": "nodemon ./src/index.ts",
+    "docker-build": "scripts/docker-build.sh",
+    "docker-run": "scripts/docker-run.sh",
+    "tsc": "tsc --noEmit --incremental",
+    "release": "./scripts/release.sh"
+  },
+  "repository": "https://github.com/aserto-dev/authzen-proxy",
+  "author": "Omri Gazitt",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@aserto/aserto-node": "0.32.0",
+    "axios": "^1.6.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "dotenv-expand": "^11.0.6",
+    "express": "^4.18.3",
+    "express-jwt": "^8.4.1"
+  },
+  "prettier": "@aserto/ts-linting-configs/prettier.config",
+  "devDependencies": {
+    "@aserto/ts-linting-configs": "^2.7.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "nodemon": "^3.1.0",
+    "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  },
+  "packageManager": "yarn@1.22.19"
+}
