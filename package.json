@@ -1,7 +1,7 @@
 {
   "name": "authzen-proxy",
-  "version": "1.0.7",
-  "description": "AuthZEN to Topaz proxy",
+  "version": "1.0.0",
+  "description": "AuthZEN to OPA proxy",
   "main": "index.ts",
   "scripts": {
     "build": "rm -rf ./build && tsc",
@@ -12,12 +12,11 @@
     "tsc": "tsc --noEmit --incremental",
     "release": "./scripts/release.sh"
   },
-  "repository": "https://github.com/aserto-dev/authzen-proxy",
+  "repository": "https://github.com/aserto-dev/authzen-opa-proxy",
   "author": "Omri Gazitt",
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@aserto/aserto-node": "0.32.0",
     "axios": "^1.6.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
