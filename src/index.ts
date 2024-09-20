@@ -21,7 +21,7 @@ const PORT = process.env.PORT ?? 8080
 
 async function handler(req: JWTRequest, res: Response) {
   const request: AuthZenRequest = req.body
-  const identity = request.subject?.identity
+  const identity = request.subject?.id
   const properties = await directory.getUserByIdentity(identity)
   const actionName = request.action?.name
   const resource = request.resource
