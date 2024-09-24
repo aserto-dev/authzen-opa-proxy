@@ -4,7 +4,7 @@ import cors from 'cors'
 import * as dotenv from 'dotenv'
 import * as dotenvExpand from 'dotenv-expand'
 import axios from 'axios'
-import { AuthZenRequest } from './interface'
+import { EvaluationRequest, EvaluationsRequest } from './interface'
 import { Directory } from './directory'
 import log from './log'
 
@@ -19,8 +19,32 @@ const directory = new Directory()
 const AUTHORIZER_SERVICE_URL = process.env.AUTHORIZER_SERVICE_URL ?? 'http://localhost:8181'
 const PORT = process.env.PORT ?? 8080
 
-async function handler(req: JWTRequest, res: Response) {
-  const request: AuthZenRequest = req.body
+async function evaluationHandler(req: JWTRequest, res: Response) {
+  const request: EvaluationRequest = req.body
+  const response = await evaluate(request)
+  res.status(200).json(response)
+}
+
+async function evaluationsHandler(req: JWTRequest, res: Response) {
+  const request: EvaluationsRequest = req.body
+  const evaluations = request.evaluations?.map((e) => ({
+    subject: e.subject ?? request.subject,
+    action: e.action ?? request.action,
+    resource: e.resource ?? request.resource,
+    context: e.context ?? request.context,
+  })) ?? [request]
+  try {
+    const evalResponse = await Promise.all(
+      evaluations.map(async (e) => await evaluate(e as EvaluationRequest))
+    )
+    res.status(200).json({ evaluations: evalResponse })
+  } catch (error) {
+    console.error(error)
+    res.status(422).send({ error: (error as Error).message })
+  }
+}
+
+async function evaluate(request: EvaluationRequest) {
   const identity = request.subject?.id
   const properties = await directory.getUserByIdentity(identity)
   const actionName = request.action?.name
@@ -39,6 +63,7 @@ async function handler(req: JWTRequest, res: Response) {
         input: {
           user: {
             id: properties?.id,
+            type: request.subject?.type,
             properties,
           },
           resource,
@@ -53,19 +78,14 @@ async function handler(req: JWTRequest, res: Response) {
       decision = (result && result['x']) ?? false
     } catch (e) {
       console.error(e)
-      res.status(403).send()
     }
   }
 
-  const response = JSON.stringify({
-    decision,
-  })
-
-  res.status(200).send(response)
+  return { decision }
 }
 
-app.post('/access/v1/evaluation', handler)
-app.post('/access/v1/evaluations', handler)
+app.post('/access/v1/evaluation', evaluationHandler)
+app.post('/access/v1/evaluations', evaluationsHandler)
 
 app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`)
